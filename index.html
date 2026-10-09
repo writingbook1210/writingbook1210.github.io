@@ -135,7 +135,7 @@ body{margin:0;background:#fff}
 </div>
 
 <!-- 作品データは works.js にあります。更新したら ?v= の数字を1つ増やします(古い版がブラウザに残らないように) -->
-<script src="works.js?v=5"></script>
+<script src="works.js?v=6"></script>
 <script>
 var flt='all', ord='new', loadTok=0;
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -176,7 +176,7 @@ function openW(w){
   document.getElementById('r-sb').textContent=w.sub;
   if(w.file){
     bd.innerHTML='';
-    fetch(w.file+'?v=5').then(function(r){if(!r.ok)throw r.status;return r.text()})
+    fetch(w.file+'?v=6').then(function(r){if(!r.ok)throw r.status;return r.text()})
       .then(function(h){if(tok===loadTok)bd.innerHTML=h})
       .catch(function(){if(tok===loadTok)bd.innerHTML='<p>本文を読み込めませんでした。</p>'});
   }else{
