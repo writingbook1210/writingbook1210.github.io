@@ -141,15 +141,12 @@ var flt='all', ord='new', loadTok=0;
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function dnum(w){var p=String(w.date||'').split('/');return p.length===3?(+p[0])*10000+(+p[1])*100+(+p[2]):0}
 function render(){
-  /* 番号は投稿日の古い順に 01, 02, … と振る */
   var chrono=W.map(function(w,i){return i}).sort(function(a,b){return dnum(W[a])-dnum(W[b])||a-b});
-  var no={};chrono.forEach(function(i,k){no[i]=k+1});
-  var list=(ord==='new')?chrono.slice().reverse():chrono;
-  document.getElementById('list').innerHTML=list.map(function(i){
+  var list=((ord==='new')?chrono.slice().reverse():chrono).filter(function(i){return flt==='all'||W[i].type===flt});
+  /* 番号は表示している順に上から 01, 02, … と振る */
+  document.getElementById('list').innerHTML=list.map(function(i,k){
     var w=W[i];
-    return (flt==='all'||w.type===flt)
-      ?'<a class="row" href="#w-'+esc(w.id)+'"><span class="no">'+('0'+no[i]).slice(-2)+'</span><span class="mn"><span class="t">'+esc(w.t)+(w.date?'<span class="dt">'+esc(w.date)+'</span>':'')+'</span>'+(w.sub?'<span class="sb">'+esc(w.sub)+'</span>':'')+'<span class="sy">'+esc(w.syn)+'</span></span><span class="mt">'+esc(w.type)+'<br>'+esc(w.st)+'</span></a>'
-      :'';
+    return '<a class="row" href="#w-'+esc(w.id)+'"><span class="no">'+('0'+(k+1)).slice(-2)+'</span><span class="mn"><span class="t">'+esc(w.t)+(w.date?'<span class="dt">'+esc(w.date)+'</span>':'')+'</span>'+(w.sub?'<span class="sb">'+esc(w.sub)+'</span>':'')+'<span class="sy">'+esc(w.syn)+'</span></span><span class="mt">'+esc(w.type)+'<br>'+esc(w.st)+'</span></a>';
   }).join('');
 }
 function setF(f){
