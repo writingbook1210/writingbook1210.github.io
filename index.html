@@ -56,6 +56,7 @@ body{margin:0;background:#fff}
 .bd.v{writing-mode:vertical-rl;height:min(70vh,440px);margin:28px auto;max-width:100%;overflow-x:auto;overflow-y:hidden}
 .bd.v p{margin:0 0 0 1.2em}
 .bd.v .tcy{-webkit-text-combine:horizontal;text-combine-upright:all}
+.bd.v sup{-webkit-text-combine:horizontal;text-combine-upright:all}
 .bd.v h2{margin:0 2.4em 0 1.2em}
 .bd.v h2:first-child{margin-right:0}
 .bd.v figure{margin:0 2em}
@@ -136,7 +137,7 @@ body{margin:0;background:#fff}
 </div>
 
 <!-- 作品データは works.js にあります。更新したら ?v= の数字を1つ増やします(古い版がブラウザに残らないように) -->
-<script src="works.js?v=7"></script>
+<script src="works.js?v=8"></script>
 <script>
 var flt='all', ord='new', loadTok=0;
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -177,7 +178,7 @@ function openW(w){
   document.getElementById('r-sb').textContent=w.sub;
   if(w.file){
     bd.innerHTML='';
-    fetch(w.file+'?v=7').then(function(r){if(!r.ok)throw r.status;return r.text()})
+    fetch(w.file+'?v=8').then(function(r){if(!r.ok)throw r.status;return r.text()})
       .then(function(h){if(tok===loadTok)bd.innerHTML=h})
       .catch(function(){if(tok===loadTok)bd.innerHTML='<p>本文を読み込めませんでした。</p>'});
   }else{
