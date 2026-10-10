@@ -126,18 +126,18 @@ body{margin:0;background:#fff}
   <div class="bar"><a class="bk" href="#">← 作品一覧</a></div>
   <h1 class="h1">連絡先</h1>
   <p class="k">Mail</p><p><a href="mailto:writing.book1210@gmail.com">writing.book1210@gmail.com</a></p>
-  <p class="k">SNS</p><p><a href="https://x.com/1210books" target="_blank" rel="noopener">X</a>　/　<a href="https://note.com/writing_book1210" target="_blank" rel="noopener">note</a></p>
+  <p class="k">SNS</p><p><a href="https://x.com/1210books" target="_blank" rel="noopener">X</a>　/　<a href="https://note.com/writing_book1210" target="_blank" rel="noopener">note</a>　/　<a href="https://writingbook1210.github.io/salon-de-lecriture/" target="_blank" rel="noopener">My salon</a></p>
 </div>
 
 <div class="ft">
   <span>© 及川 渉</span>
-  <span><a href="https://x.com/1210books" target="_blank" rel="noopener">X</a><a href="https://note.com/writing_book1210" target="_blank" rel="noopener">note</a></span>
+  <span><a href="https://x.com/1210books" target="_blank" rel="noopener">X</a><a href="https://note.com/writing_book1210" target="_blank" rel="noopener">note</a><a href="https://writingbook1210.github.io/salon-de-lecriture/" target="_blank" rel="noopener">My salon</a></span>
 </div>
 
 </div>
 
 <!-- 作品データは works.js にあります。更新したら ?v= の数字を1つ増やします(古い版がブラウザに残らないように) -->
-<script src="works.js?v=11"></script>
+<script src="works.js?v=12"></script>
 <script>
 var flt='all', ord='new', loadTok=0;
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -178,7 +178,7 @@ function openW(w){
   document.getElementById('r-sb').textContent=w.sub;
   if(w.file){
     bd.innerHTML='';
-    fetch(w.file+'?v=11').then(function(r){if(!r.ok)throw r.status;return r.text()})
+    fetch(w.file+'?v=12').then(function(r){if(!r.ok)throw r.status;return r.text()})
       .then(function(h){if(tok===loadTok)bd.innerHTML=h})
       .catch(function(){if(tok===loadTok)bd.innerHTML='<p>本文を読み込めませんでした。</p>'});
   }else{
