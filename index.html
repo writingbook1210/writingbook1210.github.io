@@ -73,6 +73,9 @@ body{margin:0;background:#fff}
 .nt{font-size:12px;color:var(--text-muted);border-top:0.5px solid var(--border);padding-top:12px;letter-spacing:.08em}
 .pg p{font-size:15px;line-height:2;margin:0 0 12px;letter-spacing:.05em}
 .pg .k{font-size:12px;color:var(--text-muted);letter-spacing:.14em;margin:24px 0 4px}
+.hist{list-style:none;margin:0;padding:0}
+.hist li{display:grid;grid-template-columns:7.4em minmax(0,1fr);gap:0 .8em;align-items:baseline;font-size:15px;line-height:2;letter-spacing:.05em}
+.hist .d{font-size:13px;color:var(--text-secondary);letter-spacing:.06em;white-space:nowrap}
 .ft{display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);letter-spacing:.12em;border-top:0.5px solid var(--border-strong);padding-top:14px;margin-top:48px}
 .ft a{text-decoration:none;margin-left:14px}
 .ft a:hover{text-decoration:underline}
@@ -121,6 +124,8 @@ body{margin:0;background:#fff}
   <h1 class="h1">プロフィール</h1>
   <p class="k">Name</p><p>及川 渉</p>
   <p class="k">About</p><p>わたしとは、わたしとは、わたしとは<br>そう思い悩んで久しい<br>わたしとは「わたし」なんだけど、そうでない時もあることを知った<br>あなたも、あなた。なんだけど、わたしになることだってある<br>溶けて混ざって掻き回して一緒になって<br>それでわたしも、あなたもできていく<br>それでもちがうと分かる時だってある<br>そんな時にふと誰かの人生を開いてみてほしい<br>そこにはわたしではない人生が待っている<br>あなたの見るそれは、わたしより良いかもしれないし、悪いかもしれない<br>開かないと分からない。活字を読まないと知ることさえできない。<br>だけど開いて読むと分かるのだ<br>さあ、あなたの人生を開いて<br>わたしに、あなたに、みんなに見せて<br>あなただけの人生を。</p>
+  <p class="k">History</p>
+  <ol class="hist" id="hist"></ol>
 </div>
 
 <!-- 連絡先:メールとSNSのURLを書き換え -->
@@ -139,7 +144,8 @@ body{margin:0;background:#fff}
 </div>
 
 <!-- 作品データは works.js にあります。更新したら ?v= の数字を1つ増やします(古い版がブラウザに残らないように) -->
-<script src="works.js?v=12"></script>
+<script src="works.js?v=13"></script>
+<script src="history.js?v=13"></script>
 <script>
 var flt='all', ord='new', loadTok=0;
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -180,7 +186,7 @@ function openW(w){
   document.getElementById('r-sb').textContent=w.sub;
   if(w.file){
     bd.innerHTML='';
-    fetch(w.file+'?v=12').then(function(r){if(!r.ok)throw r.status;return r.text()})
+    fetch(w.file+'?v=13').then(function(r){if(!r.ok)throw r.status;return r.text()})
       .then(function(h){if(tok===loadTok)bd.innerHTML=h})
       .catch(function(){if(tok===loadTok)bd.innerHTML='<p>本文を読み込めませんでした。</p>'});
   }else{
@@ -204,7 +210,15 @@ function route(){
   show('top');
 }
 window.addEventListener('hashchange',route);
+function renderHist(){
+  if(typeof HISTORY==='undefined')return;
+  /* 日付の新しいものを一番上に */
+  document.getElementById('hist').innerHTML=HISTORY.map(function(h,i){return {h:h,i:i}})
+    .sort(function(a,b){return dnum(b.h)-dnum(a.h)||b.i-a.i})
+    .map(function(x){return '<li><span class="d">'+esc(x.h.date)+'</span><span>'+esc(x.h.text)+'</span></li>'}).join('');
+}
 render();
+renderHist();
 route();
 </script>
 </body>
