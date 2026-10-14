@@ -1,0 +1,31 @@
+# robots.txt for https://writingbook1210.github.io/
+# Salon de l'ecriture: opt out of AI model training (2026-10-14)
+# Only the salon's pages (/salon-de-lecriture/) are covered.
+
+# Anthropic - training crawler
+User-agent: ClaudeBot
+Disallow: /salon-de-lecriture/
+
+# OpenAI - training crawler
+User-agent: GPTBot
+Disallow: /salon-de-lecriture/
+
+# Google - opt out of Gemini training (does not affect Google Search)
+User-agent: Google-Extended
+Disallow: /salon-de-lecriture/
+
+# Apple - opt out of foundation model training (does not affect Applebot search)
+User-agent: Applebot-Extended
+Disallow: /salon-de-lecriture/
+
+# Meta - AI training crawler
+User-agent: meta-externalagent
+Disallow: /salon-de-lecriture/
+
+# Common Crawl - open dataset widely used for AI training
+User-agent: CCBot
+Disallow: /salon-de-lecriture/
+
+# Everyone else (search engines etc.) is allowed
+User-agent: *
+Allow:
