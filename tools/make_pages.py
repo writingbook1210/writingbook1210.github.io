@@ -60,7 +60,7 @@ def ogp_block(title, desc, url, image, kind):
 def work_page(template, w):
     a = lambda s: html.escape(s, quote=True)
     title = f"{w['t']}｜{AUTHOR}"
-    desc = w.get('syn') or w.get('sub') or f"{AUTHOR}の{w['type']}"
+    desc = w.get('syn') or w.get('sub') or w['type']
     url = f"{SITE_URL}w/{w['id']}/"
     s = template
     s = s.replace('<meta charset="UTF-8">',
