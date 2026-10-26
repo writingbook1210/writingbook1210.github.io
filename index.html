@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>及川 渉</title>
 <meta name="description" content="及川 渉の小説と評論を置く場所">
+<!-- OGP（SNS などで共有したときに出る題名・説明・画像）ここから。
+     作品ごとのページ w/<id>/ は tools/make_pages.py がこの部分を作品のものに差し替えて作ります -->
+<link rel="canonical" href="https://writingbook1210.github.io/">
+<meta property="og:site_name" content="writing book">
+<meta property="og:type" content="website">
+<meta property="og:title" content="及川 渉">
+<meta property="og:description" content="及川 渉の小説と評論を置く場所">
+<meta property="og:url" content="https://writingbook1210.github.io/">
+<meta property="og:image" content="https://writingbook1210.github.io/images/ogp/site.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<!-- OGP ここまで -->
 <link rel="icon" type="image/png" sizes="32x32" href="images/icon-32.png?v=1">
 <link rel="apple-touch-icon" href="images/icon-180.png?v=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -143,9 +157,10 @@ body{margin:0;background:#fff}
 
 </div>
 
-<!-- 作品データは works.js にあります。更新したら ?v= の数字を1つ増やします(古い版がブラウザに残らないように) -->
-<script src="works.js?v=13"></script>
-<script src="history.js?v=13"></script>
+<!-- 作品データは works.js にあります。更新したら ?v= の数字を1つ増やします(古い版がブラウザに残らないように)
+     index.html か works.js を書き換えたら python3 tools/make_pages.py を実行します(作品ごとのページ w/ と共有画像を作り直すため) -->
+<script src="works.js?v=14"></script>
+<script src="history.js?v=14"></script>
 <script>
 var flt='all', ord='new', loadTok=0;
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -156,7 +171,7 @@ function render(){
   /* 番号は表示している順に上から 01, 02, … と振る */
   document.getElementById('list').innerHTML=list.map(function(i,k){
     var w=W[i];
-    return '<a class="row" href="#w-'+esc(w.id)+'"><span class="no">'+('0'+(k+1)).slice(-2)+'</span><span class="mn"><span class="t">'+esc(w.t)+(w.date?'<span class="dt">'+esc(w.date)+'</span>':'')+'</span>'+(w.sub?'<span class="sb">'+esc(w.sub)+'</span>':'')+'<span class="sy">'+esc(w.syn)+'</span></span><span class="mt">'+esc(w.type)+'<br>'+esc(w.st)+'</span></a>';
+    return '<a class="row" href="w/'+esc(w.id)+'/"><span class="no">'+('0'+(k+1)).slice(-2)+'</span><span class="mn"><span class="t">'+esc(w.t)+(w.date?'<span class="dt">'+esc(w.date)+'</span>':'')+'</span>'+(w.sub?'<span class="sb">'+esc(w.sub)+'</span>':'')+'<span class="sy">'+esc(w.syn)+'</span></span><span class="mt">'+esc(w.type)+'<br>'+esc(w.st)+'</span></a>';
   }).join('');
 }
 function setF(f){
@@ -186,7 +201,7 @@ function openW(w){
   document.getElementById('r-sb').textContent=w.sub;
   if(w.file){
     bd.innerHTML='';
-    fetch(w.file+'?v=13').then(function(r){if(!r.ok)throw r.status;return r.text()})
+    fetch(w.file+'?v=14').then(function(r){if(!r.ok)throw r.status;return r.text()})
       .then(function(h){if(tok===loadTok)bd.innerHTML=h})
       .catch(function(){if(tok===loadTok)bd.innerHTML='<p>本文を読み込めませんでした。</p>'});
   }else{
@@ -202,9 +217,14 @@ function route(){
   var h=decodeURIComponent(location.hash.slice(1));
   if(h==='profile'){document.title='プロフィール｜及川 渉';show('pf');return}
   if(h==='contact'){document.title='連絡先｜及川 渉';show('ct');return}
+  /* 作品は w/<id>/ のページで開く（作品ごとに共有用の情報を持たせるため）。
+     そのページでは START に作品の id が入っている。以前の #w-<id> のリンクは w/<id>/ へ移す */
+  if(!h&&typeof START!=='undefined')h='w-'+START;
   if(h.indexOf('w-')===0){
     var id=h.slice(2);
-    for(var i=0;i<W.length;i++){if(W[i].id===id){openW(W[i]);return}}
+    for(var i=0;i<W.length;i++){if(W[i].id===id){
+      if(typeof START==='undefined'){location.replace('w/'+encodeURIComponent(id)+'/');return}
+      openW(W[i]);return}}
   }
   document.title='及川 渉';
   show('top');
