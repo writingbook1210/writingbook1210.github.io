@@ -90,6 +90,11 @@ body{margin:0;background:#fff}
 .bd .fn{font-size:12px;line-height:1.9;letter-spacing:.04em;color:var(--text-secondary);margin:2.4em 0 0;padding:16px 0 0 1.8em;border-top:0.5px solid var(--border)}
 .bd .fn li{margin:0 0 .6em;overflow-wrap:anywhere}
 .bd.v .fn{margin:0 2.4em 0 0;padding:1.8em 16px 0 0;border-top:0;border-right:0.5px solid var(--border)}
+/* 縦書きのときだけ縦組みの形を見せる（横書きは原文のまま）。Salon de l’écriture と同じ決まり */
+.bd .t-v{display:none}
+.bd.v .t-v{display:inline}
+.bd.v .t-h{display:none}
+.bd .sw{text-orientation:sideways}
 .nt{font-size:12px;color:var(--text-muted);border-top:0.5px solid var(--border);padding-top:12px;letter-spacing:.08em}
 .pg p{font-size:15px;line-height:2;margin:0 0 12px;letter-spacing:.05em}
 .pg .k{font-size:12px;color:var(--text-muted);letter-spacing:.14em;margin:24px 0 4px}
@@ -166,11 +171,62 @@ body{margin:0;background:#fff}
 <!-- 作品データは works.js にあります。更新したら ?v= の数字を1つ増やします(古い版がブラウザに残らないように)
      index.html か works.js を書き換えたら python3 tools/make_pages.py を実行します(作品ごとのページ w/ と共有画像を作り直すため) -->
 <script>var START='taiji';</script>
-<script src="works.js?v=15"></script>
-<script src="history.js?v=15"></script>
+<script src="works.js?v=16"></script>
+<script src="history.js?v=16"></script>
 <script>
 var flt='all', ord='new', loadTok=0;
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+/* 縦書きのときだけ、数字や記号を縦組みの形で見せる（横書きでは原文のまま）。
+   Salon de l’écriture（tools/build.mjs の verticalize）と同じ決まり。サロンの決まりが変わったらここも合わせる。
+   原文の文字は変えず、横書き用（t-h）と縦書き用（t-v）の形を並べておき、CSS でどちらかを見せる。
+   ・半角の数字：2桁は縦中横、1桁と3桁以上は全角にして立てる。全角の数字2桁も縦中横
+   ・, → 、　( ) → （ ）　? ! → ？ ！　" と “ ” → 〝 〟　日本語の間の / → ／
+   ・大文字だけの略語（D、RPG、NCPD、SNS、HER など4字まで）は立てる。2字（AI など）は縦中横、1字と3〜4字は全角にして立てる
+   ・「1.」のような番号は縦中横。「CASE.5」のような大文字＋番号は全角にして立てる
+   ・全角の「：」は横に寝かせる（二つの点が横に並ぶ、縦組みのコロンの形にする）
+   ・小文字を含む語、URL、: / - を含むもの（p43-56 など）は欧文として横に寝かせたまま
+   ・<a> <sup> と、すでに縦中横にしてある所（class="tcy"）は触らない */
+function vz(html){
+  var toFull=function(s){return s.replace(/[0-9]/g,function(d){return String.fromCharCode(d.charCodeAt(0)+0xFEE0)})};
+  var toFullAZ=function(s){return s.replace(/[A-Z]/g,function(c){return String.fromCharCode(c.charCodeAt(0)+0xFEE0)})};
+  var tcy=function(d){return '<span class="tcy">'+d+'</span>'};
+  var vDigits=function(d){return d.length===2?tcy(d):toFull(d)};
+  var vAlt=function(h,v){return '<span class="t-h">'+h+'</span><span class="t-v">'+v+'</span>'};
+  var map={',':'、','(':'（',')':'）','?':'？','!':'！'};
+  var st={q:false}, stack=[];
+  function vAscii(run){
+    if(run==='/')return vAlt(run,'／');
+    if(/^[A-Z]{2}$/.test(run))return tcy(run);
+    if(/^(?:[A-Z]|[A-Z]{3,4})$/.test(run))return vAlt(run,toFullAZ(run));
+    if(/^[0-9]{1,2}\.$/.test(run))return tcy(run);
+    var cs=run.match(/^([A-Z]{1,4})\.([0-9]{1,2})$/);
+    if(cs)return vAlt(run,toFullAZ(cs[1])+'．'+vDigits(cs[2]));
+    if(/[A-Za-z&;:\/\-]/.test(run))return run;
+    if(/\d[,.]\d/.test(run))return run;
+    return run.replace(/[0-9]+|[,()"?!]/g,function(t){
+      if(/^[0-9]+$/.test(t))return t.length===2?tcy(t):vAlt(t,toFull(t));
+      if(t==='"'){st.q=!st.q;return vAlt(t,st.q?'〝':'〟')}
+      return vAlt(t,map[t]);
+    });
+  }
+  return html.split(/(<[^>]+>)/).map(function(part){
+    if(part.charAt(0)==='<'){
+      var m=part.match(/^<(\/?)([a-zA-Z0-9]+)/);
+      if(!m||/\/>$/.test(part)||/^(img|br|hr|wbr|source)$/i.test(m[2]))return part;
+      if(m[1]){stack.pop();return part}
+      if(/^(p|li|h[1-6]|figcaption|dd|dt|td|th)$/i.test(m[2]))st.q=false;
+      stack.push(/^(a|sup|code|pre)$/i.test(m[2])||/class="[^"]*\btcy\b/.test(part));
+      return part;
+    }
+    if(stack.some(Boolean)||!part)return part;
+    return part.replace(/([!-~]+(?: [!-~]+)*)|([０-９]+)|([“”])|(：)/g,function(all,ascii,fw,q,colon){
+      if(ascii)return vAscii(ascii);
+      if(fw)return fw.length===2?tcy(fw):fw;
+      if(colon)return vAlt(colon,'<span class="sw">：</span>');
+      return vAlt(q,q==='“'?'〝':'〟');
+    });
+  }).join('');
+}
 function dnum(w){var p=String(w.date||'').split('/');return p.length===3?(+p[0])*10000+(+p[1])*100+(+p[2]):0}
 function render(){
   var chrono=W.map(function(w,i){return i}).sort(function(a,b){return dnum(W[a])-dnum(W[b])||a-b});
@@ -208,11 +264,11 @@ function openW(w){
   document.getElementById('r-sb').textContent=w.sub;
   if(w.file){
     bd.innerHTML='';
-    fetch(w.file+'?v=15').then(function(r){if(!r.ok)throw r.status;return r.text()})
-      .then(function(h){if(tok===loadTok)bd.innerHTML=h})
+    fetch(w.file+'?v=16').then(function(r){if(!r.ok)throw r.status;return r.text()})
+      .then(function(h){if(tok===loadTok)bd.innerHTML=vz(h)})
       .catch(function(){if(tok===loadTok)bd.innerHTML='<p>本文を読み込めませんでした。</p>'});
   }else{
-    bd.innerHTML=(w.lead?'<p class="ld">'+esc(w.lead).replace(/\n/g,'<br>')+'</p>':'')+(w.body||'').split('\n').filter(function(p){return p}).map(function(p){return '<p>'+esc(p)+'</p>'}).join('');
+    bd.innerHTML=vz((w.lead?'<p class="ld">'+esc(w.lead).replace(/\n/g,'<br>')+'</p>':'')+(w.body||'').split('\n').filter(function(p){return p}).map(function(p){return '<p>'+esc(p)+'</p>'}).join(''));
   }
   var nt=document.getElementById('r-nt');
   nt.textContent=w.nt;
