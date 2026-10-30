@@ -80,6 +80,13 @@ body{margin:0;background:#fff}
 .bd sup{font-size:.62em;line-height:0;margin:0 .1em}
 .bd blockquote{margin:1.6em 0;padding-left:2em}
 .bd.v blockquote{margin:0 1.6em;padding:2em 0 0}
+/* 前を広くあける段落（sp）、見出しの番号（hn）、動画（video）。Salon de l’écriture と同じ */
+.bd p.sp{margin-block-start:3.3em}
+.bd h2 .hn{margin-inline-end:.6em}
+.bd.v h2 .hn{margin-inline-end:.3em}
+.bd figure.video{margin-block:1.6em 2.2em}
+.bd .video iframe{display:block;width:100%;height:auto;aspect-ratio:16/9;border:0;background:#f2f2f2}
+.bd.v .video iframe{width:auto;height:18em}
 .bd .fn{font-size:12px;line-height:1.9;letter-spacing:.04em;color:var(--text-secondary);margin:2.4em 0 0;padding:16px 0 0 1.8em;border-top:0.5px solid var(--border)}
 .bd .fn li{margin:0 0 .6em;overflow-wrap:anywhere}
 .bd.v .fn{margin:0 2.4em 0 0;padding:1.8em 16px 0 0;border-top:0;border-right:0.5px solid var(--border)}
@@ -159,8 +166,8 @@ body{margin:0;background:#fff}
 <!-- 作品データは works.js にあります。更新したら ?v= の数字を1つ増やします(古い版がブラウザに残らないように)
      index.html か works.js を書き換えたら python3 tools/make_pages.py を実行します(作品ごとのページ w/ と共有画像を作り直すため) -->
 <script>var START='kakimono';</script>
-<script src="works.js?v=14"></script>
-<script src="history.js?v=14"></script>
+<script src="works.js?v=15"></script>
+<script src="history.js?v=15"></script>
 <script>
 var flt='all', ord='new', loadTok=0;
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -201,7 +208,7 @@ function openW(w){
   document.getElementById('r-sb').textContent=w.sub;
   if(w.file){
     bd.innerHTML='';
-    fetch(w.file+'?v=14').then(function(r){if(!r.ok)throw r.status;return r.text()})
+    fetch(w.file+'?v=15').then(function(r){if(!r.ok)throw r.status;return r.text()})
       .then(function(h){if(tok===loadTok)bd.innerHTML=h})
       .catch(function(){if(tok===loadTok)bd.innerHTML='<p>本文を読み込めませんでした。</p>'});
   }else{
